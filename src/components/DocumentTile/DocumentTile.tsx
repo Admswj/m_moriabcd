@@ -33,6 +33,7 @@ export const DocumentTile = ({
   onClick,
 }: DocumentTileProps) => {
   const placementStyle = useDocumentTilePlacement({ centerPlacement, width: width });
+  const labelClickable = Boolean(labelUnderlined && onClick && !interactionInert);
 
   return (
     <div
@@ -46,12 +47,22 @@ export const DocumentTile = ({
         .join(' ')}
       onClick={onClick}
       style={placementStyle}>
-      <div className='document-tile-media' style={{ opacity: coverOpacity }}>
-        <img src={document.coverSrc} decoding='async' alt={document.name}/>
+      <div
+        className='document-tile-media'
+        style={{ opacity: coverOpacity }}>
+        {document.coverSrc && (
+          <img
+            src={document.coverSrc}
+            decoding='async'
+            alt={document.name}
+          />
+        )}
       </div>
       {document.name && (
         <div
-          className='document-tile-label'
+          className={['document-tile-label', labelClickable ? 'document-tile-label--clickable' : '']
+            .filter(Boolean)
+            .join(' ')}
           style={{
             fontSize: planePx(LABEL_PLANE_SIZE),
             marginTop: planePx(Math.round(LABEL_PLANE_SIZE / 1.2)),
@@ -62,7 +73,15 @@ export const DocumentTile = ({
               textDecorationThickness: planePx(LABEL_UNDERLINE_THICKNESS_PLANE),
               textUnderlineOffset: planePx(Math.round(LABEL_PLANE_SIZE / 10)),
             }),
-          }}>
+          }}
+          onClick={
+            labelClickable ?
+              (e) => {
+                e.stopPropagation();
+                onClick?.();
+              }
+            : undefined
+          }>
           {document.name}
         </div>
       )}

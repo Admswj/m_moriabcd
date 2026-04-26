@@ -11,7 +11,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  transition: opacity 0.22s ease;
+  transition: opacity 0.5s ease;
 }
 
 .document-tile-media > img {
@@ -47,4 +47,9 @@
 
 .document-tile-root--interaction-inert {
   cursor: default;
+}
+
+.document-tile-label--clickable {
+  pointer-events: auto;
+  cursor: pointer;
 }

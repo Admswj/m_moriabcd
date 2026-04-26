@@ -5,41 +5,45 @@ import { documentTilesProps, matrixTileProps, projectTileProps } from './data';
 import './App.css';
 
 export const App = () => {
-  const [{ documents, dimmedTileIndices }, dispatch] = useReducer(
-    documentsReducer,
-    undefined,
-    createInitialDocumentsState,
-  );
+  const [{ documents, indicesPath }, dispatch] = useReducer(documentsReducer, undefined, createInitialDocumentsState);
 
   const onCollectionTileClick = useCallback((clickedIndex: number) => {
-    dispatch({ type: 'openCollection', clickedIndex });
+    dispatch({ type: 'click', clickedIndex });
   }, []);
 
   return (
     <main>
       <Plane className='app-plane'>
-        <NovepvntiTile {...matrixTileProps} />
+        <NovepvntiTile
+          {...matrixTileProps}
+          onClick={indicesPath.length === 0 ? () => onCollectionTileClick(0) : undefined}
+          opacity={indicesPath.length > 0 ? 0.1 : 1}
+        />
         {documentTilesProps.map((props, index) => {
-          const dimmed = dimmedTileIndices.includes(index);
-          const latestDimmed = dimmedTileIndices.at(-1);
+          const dimmed = indicesPath.includes(index);
+          const latestDimmed = indicesPath.at(-1);
           const isLatestDimmed = latestDimmed === index;
           const trailRewindable = dimmed && !isLatestDimmed;
-          return documents[index] ? (
-            <Fragment key={`${index}-${documents[index]!.name}`}>
-              <DocumentTile
-                {...props}
-                document={documents[index]!}
-                coverOpacity={dimmed ? 0.1 : 1}
-                labelPinned={dimmed}
-                labelUnderlined={trailRewindable}
-                interactionInert={isLatestDimmed}
-                onClick={() => onCollectionTileClick(index)}
-              />
-            </Fragment>
-          ) : undefined;
+          return documents[index] ?
+              <Fragment key={`${index}-${documents[index]!.name}`}>
+                <DocumentTile
+                  {...props}
+                  document={documents[index]!}
+                  coverOpacity={dimmed ? 0.1 : 1}
+                  labelPinned={dimmed || index === 0}
+                  labelUnderlined={trailRewindable}
+                  interactionInert={isLatestDimmed}
+                  onClick={() => onCollectionTileClick(index)}
+                />
+              </Fragment>
+            : undefined;
         })}
-        <NovepvntiTile {...projectTileProps} onClick={() => dispatch({ type: 'reset' })} />
+        <NovepvntiTile
+          {...projectTileProps}
+          onClick={() => dispatch({ type: 'reset' })}
+        />
       </Plane>
+      {/*<Explorer layout='horizontal' documentSrc='' />*/}
       <Footer />
     </main>
   );

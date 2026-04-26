@@ -1,44 +1,51 @@
 import { isCollection, type Document } from '../components';
 import { documentTilesProps } from '../data';
-import { allDocuments } from '../data/documents';
+import { allDocuments, matrixTileDocument } from '../data';
 
 const slotCount = documentTilesProps.length;
 
 export type DocumentsState = {
   documents: Array<Document | undefined>;
-  dimmedTileIndices: number[];
+  indicesPath: number[];
 };
 
-export type DocumentsAction =
-  | { type: 'openCollection'; clickedIndex: number }
-  | { type: 'reset' };
+export type DocumentsAction = { type: 'click'; clickedIndex: number } | { type: 'reset' };
 
 export const createInitialDocumentsState = (): DocumentsState => {
-  const documents: Array<Document | undefined> = [undefined, ...allDocuments];
-  while (documents.length < slotCount) documents.push(undefined);
-  return { documents, dimmedTileIndices: [] };
+  const documents: Array<Document | undefined> = [matrixTileDocument, ...allDocuments];
+  while (documents.length < slotCount) {
+    documents.push(undefined);
+  }
+
+  return { documents, indicesPath: [] };
 };
 
 const applyStep = (prev: DocumentsState, i: number): DocumentsState => {
-  const doc = prev.documents[i]!;
-  const children = isCollection(doc) ? doc.children : [];
+  const document = prev.documents[i]!;
+  const children = isCollection(document) ? document.children : [];
   const next = Array.from({ length: slotCount }, () => undefined as Document | undefined);
-  const top = prev.dimmedTileIndices.at(-1) ?? 0;
-  for (let k = 0; k <= top; k += 1) next[k] = prev.documents[k];
-  next[i] = doc;
-  for (let c = 0; c < children.length && i + 1 + c < slotCount; c += 1) next[i + 1 + c] = children[c];
+
+  for (let k = 0; k <= prev.indicesPath.at(-1) ?? 0; k += 1) {
+    next[k] = prev.documents[k];
+  }
+  next[i] = document;
+  for (let c = 0; c < children.length && i + 1 + c < slotCount; c += 1) {
+    next[i + 1 + c] = children[c];
+  }
+
   return {
     documents: next,
-    dimmedTileIndices: prev.dimmedTileIndices.includes(i) ? prev.dimmedTileIndices : [...prev.dimmedTileIndices, i],
+    indicesPath: prev.indicesPath.includes(i) ? prev.indicesPath : [...prev.indicesPath, i],
   };
 };
 
 export const documentsReducer = (state: DocumentsState, action: DocumentsAction): DocumentsState => {
-  if (action.type === 'reset') return createInitialDocumentsState();
-  const i = action.clickedIndex;
-  if (state.dimmedTileIndices.includes(i)) {
-    const p = state.dimmedTileIndices.indexOf(i);
-    return state.dimmedTileIndices.slice(0, p + 1).reduce((s, j) => applyStep(s, j), createInitialDocumentsState());
+  if (action.type === 'reset') {
+    return createInitialDocumentsState();
   }
-  return applyStep(state, i);
+  if (state.indicesPath.includes(action.clickedIndex)) {
+    const p = state.indicesPath.indexOf(action.clickedIndex);
+    return state.indicesPath.slice(0, p + 1).reduce((s, j) => applyStep(s, j), createInitialDocumentsState());
+  }
+  return applyStep(state, action.clickedIndex);
 };
