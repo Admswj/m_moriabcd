@@ -6,7 +6,7 @@
   height: 6vh;
   z-index: 10;
   box-sizing: border-box;
-  border-top: 1px solid currentColor;
+  border-top: 1px solid var(--color-stroke);
   color: var(--color-stroke);
   display: flex;
   align-items: center;
@@ -28,13 +28,18 @@
 
 .app-footer-nav__btn {
   box-sizing: border-box;
-  min-width: 2.25em;
-  min-height: 4vh;
-  padding: 0 0.65em;
-  border: 1px solid currentColor;
+  width: 3vh;
+  height: 3vh;
+  aspect-ratio: 1;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid var(--color-stroke);
   border-radius: 2px;
   background: var(--color-bg);
-  color: inherit;
+  color: var(--color-stroke);
   font: inherit;
   line-height: 1;
   cursor: pointer;
@@ -45,15 +50,41 @@
   cursor: default;
 }
 
+.app-footer-nav__icon {
+  display: block;
+  width: 52%;
+  height: 52%;
+  flex-shrink: 0;
+  stroke: var(--color-stroke);
+  stroke-width: 2;
+  fill: none
+}
+
 .app-footer-text {
   display: inline-flex;
   align-items: center;
   box-sizing: border-box;
   min-height: 4.5vh;
-  padding: 0.75vh 4vh 0.75vh 2em;
+  padding: 0.75vh 2vh 0.75vh 0;
+  color: var(--color-stroke);
   font-size: max(10px, 1.1vh);
+  pointer-events: auto;
+}
+
+.app-footer-text__prefix {
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: default;
+  padding-right: 1vh;
+}
+
+.app-footer-text__email {
   user-select: text;
   -webkit-user-select: text;
-  pointer-events: auto;
   cursor: text;
+  padding: 0 2vh 0 2vh;
+}
+
+.app-footer-text--prefixed .app-footer-text__email {
+  font-weight: 500;
 }

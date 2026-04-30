@@ -22,11 +22,6 @@ main {
   align-items: stretch;
 }
 
-/**
- * Wraps the plane without changing the plane’s box or tile coordinates.
- * Padding in plane units reserves flex width so content past x = PLANE_SIZE
- * is not clipped by the row; Explorer flexes against the hub’s outer width.
- */
 .app-plane-hub {
   flex-shrink: 0;
   align-self: flex-start;

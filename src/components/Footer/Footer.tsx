@@ -1,80 +1,66 @@
 import { useEffect } from 'react';
+import { FooterNavIconDownload, FooterNavIconNext, FooterNavIconPrevious } from './Icons';
 import './Footer.css';
+import {EDIZIONE_DOWNLOAD_FILE, EDIZIONE_DOWNLOAD_PATH} from "../../data";
 
 type FooterProps =
   | {
-      mode: 'link';
+      mode: 'text';
       prefixed: boolean;
     }
   | {
       mode: 'navigation';
       onPrevious: () => void;
-      onDownload: () => void;
       onNext: () => void;
       pdfPage: number;
-      pdfNumPages: number;
+      pdfPagesNum: number;
+      downloadVisible: boolean;
     };
 
-const selectionTouchesFooterText = (): boolean => {
-  const sel = window.getSelection();
-  if (!sel?.rangeCount || sel.isCollapsed) return false;
-  const inText = (n: Node | null) => {
-    const el = n?.nodeType === Node.TEXT_NODE ? (n as Text).parentElement : (n as Element | null);
-    return Boolean(el?.closest('.app-footer-text'));
-  };
-  return inText(sel.anchorNode) || inText(sel.focusNode);
-};
-
-export const Footer = (props: FooterProps = { mode: 'link', prefixed: false }) => {
+export const Footer = (props: FooterProps = { mode: 'text', prefixed: false }) => {
   useEffect(() => {
-    if (props.mode === 'navigation') return;
+    if (props.mode === 'text') {
+      const handleSelection = (e: MouseEvent) => {
+        if (!(e.target as Element).closest('.app-footer-text__email')) {
+          window.getSelection()?.removeAllRanges();
+        }
+      };
 
-    const onMouseDown = (e: MouseEvent) => {
-      const t = e.target;
-      if (!(t instanceof Element)) return;
-      if (t.closest('.app-footer-text')) return;
-      if (selectionTouchesFooterText()) {
-        window.getSelection()?.removeAllRanges();
-      }
-    };
-
-    document.addEventListener('mousedown', onMouseDown);
-    return () => document.removeEventListener('mousedown', onMouseDown);
+      document.addEventListener('mousedown', handleSelection);
+      return () => document.removeEventListener('mousedown', handleSelection);
+    }
   }, [props.mode]);
 
-  if (props.mode === 'navigation') {
-    const atFirst = props.pdfPage <= 1;
-    const atLast = props.pdfPage >= props.pdfNumPages;
-    return (
-      <footer className='app-footer app-footer--navigation'>
-        <div className='app-footer-nav'>
-          <button
-            type='button'
-            className='app-footer-nav__btn'
-            aria-label='Previous page'
-            disabled={atFirst}
-            onClick={props.onPrevious}>
-            ←
-          </button>
-          <button
-            type='button'
-            className='app-footer-nav__btn'
-            aria-label='Next page'
-            disabled={atLast}
-            onClick={props.onNext}>
-            →
-          </button>
-        </div>
-      </footer>
-    );
-  }
+  const onDownload = () => {
+    const text = document.createElement("a");
+    Object.assign(text, { href: EDIZIONE_DOWNLOAD_PATH, download: EDIZIONE_DOWNLOAD_FILE });
+    text.click();
+  };
 
   return (
-    <footer className='app-footer'>
-      <span className='app-footer-text'>
-        {props.mode === 'link' && props.prefixed ? 'For object inquiry please contact: ' : null}
-        info@mmoriabcd.com
-      </span>
-    </footer>
+      <footer className='app-footer'>
+        {props.mode === 'text' ? (
+            <span className={`app-footer-text ${props.prefixed ? 'app-footer-text--prefixed' : ''}`}>
+              {props.prefixed && (
+                  <span className='app-footer-text__prefix'>For object inquiry please contact :</span>
+              )}
+              <span className='app-footer-text__email'>info@mmoriabcd.com</span>
+            </span>
+        ) : (
+            <div className='app-footer-nav'>
+              <button type='button' className='app-footer-nav__btn' disabled={props.pdfPage <= 1} onClick={props.onPrevious}>
+                <FooterNavIconPrevious />
+              </button>
+              {props.downloadVisible && (
+                  <button type='button' className='app-footer-nav__btn' onClick={onDownload}>
+                    <FooterNavIconDownload />
+                  </button>
+              )}
+              <button type='button' className='app-footer-nav__btn' disabled={props.pdfPage >= props.pdfPagesNum} onClick={props.onNext}>
+                <FooterNavIconNext />
+              </button>
+            </div>
+        )}
+      </footer>
   );
 };

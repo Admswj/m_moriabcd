@@ -3,6 +3,11 @@ import type { Collection, Document, DocumentTrailer, Layout, SingleDocument } fr
 const COVER_PATH_PREFIX = '/covers/';
 const DOCUMENT_PATH_PREFIX = '/documents/';
 
+export const OGETTO_NAME = 'ogett0';
+export const EDIZIONE_NAME = 'edizi0ne';
+export const EDIZIONE_DOWNLOAD_FILE = `${EDIZIONE_NAME}-document.pdf`;
+export const EDIZIONE_DOWNLOAD_PATH = `${DOCUMENT_PATH_PREFIX}${EDIZIONE_DOWNLOAD_FILE}`
+
 const getCollectionForName = (name: string, children: Array<Document>): Collection => ({
   name,
   coverSrc: `${COVER_PATH_PREFIX}${name}-cover.jpg`,
@@ -18,7 +23,7 @@ const getSingleDocumentForName = (name: string, layout: Layout = 'vertical'): Si
 
 export const matrixTileDocument: SingleDocument = {
   name: 'm_moriabcd',
-  documentSrc: 'm_moriabcd-video.mov',
+  documentSrc: `${DOCUMENT_PATH_PREFIX}m_moriabcd-video.mp4`,
   layout: 'horizontal',
 };
 
@@ -42,9 +47,9 @@ export const allDocuments: Array<Document> = [
     getSingleDocumentForName('l0318'),
     getSingleDocumentForName('f0918'),
   ]),
-  getCollectionForName('ogett0', [
+  getCollectionForName(OGETTO_NAME, [
     getSingleDocumentForName('m_moriabc'),
-    getSingleDocumentForName('edizi0ne'),
+    getSingleDocumentForName(EDIZIONE_NAME),
     dirimeDocument,
   ]),
 ];

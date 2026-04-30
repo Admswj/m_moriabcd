@@ -6,8 +6,8 @@ export const PRIMARY_X = 3311;
 export const MAJOR_TILE_EDGE = 727;
 
 export const matrixTileProps: NovepvntiTileProps = {
-  color: '#9da696',
-  opacity: 0.88,
+  color: '#b3baad',
+  opacity: 0.66,
   size: 727,
   centerPlacement: {
     x: PRIMARY_X,
@@ -17,7 +17,7 @@ export const matrixTileProps: NovepvntiTileProps = {
 };
 
 export const projectTileProps: NovepvntiTileProps = {
-  color: '#ededed',
+  color: '#84887f',
   size: 363,
   centerPlacement: {
     x: 3762,
@@ -36,16 +36,10 @@ export const documentTilesProps: Array<Pick<DocumentTileProps, 'width' | 'center
   }),
 );
 
-/** Rightmost tile edge in plane units (covers document row + novepvnti tiles). */
-const maxPlaneContentX = Math.max(
+const maxContentX = Math.max(
   PRIMARY_X + 7 * DISTANCE_X + MAJOR_TILE_EDGE / 2,
   PRIMARY_X + matrixTileProps.size / 2,
   projectTileProps.centerPlacement.x + projectTileProps.size / 2,
 );
 
-/**
- * How far past the nominal `PLANE_SIZE` square content extends on +X.
- * Used by `.app-plane-hub` padding so the flex row reserves space without
- * resizing or shifting the plane or tile coordinates.
- */
-export const PLANE_HUB_OVERFLOW_X_PLANE_UNITS = Math.max(0, Math.ceil(maxPlaneContentX - PLANE_SIZE));
+export const PLANE_X_OVERFLOW = Math.max(0, Math.ceil(maxContentX - PLANE_SIZE));

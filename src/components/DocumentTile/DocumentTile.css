@@ -11,7 +11,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.4s ease;
 }
 
 .document-tile-media > img {
@@ -36,20 +36,6 @@
   transition: opacity 0.22s ease;
 }
 
-.document-tile-root:hover .document-tile-label,
-.document-tile-root--label-pinned .document-tile-label {
+.document-tile-root:hover .document-tile-label {
   opacity: 1;
-}
-
-.document-tile-clickable {
-  cursor: pointer;
-}
-
-.document-tile-root--interaction-inert {
-  cursor: default;
-}
-
-.document-tile-label--clickable {
-  pointer-events: auto;
-  cursor: pointer;
 }

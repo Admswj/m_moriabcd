@@ -3,7 +3,6 @@ import { Document as PdfDocument, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
-import { getPdfBytes } from '../../pdfPreload';
 import type { SingleDocument } from '../DocumentTile';
 import './Explorer.css';
 
@@ -54,21 +53,7 @@ export const Explorer = ({ documentSrc, layout, pdfPage = 1, onPdfLoaded }: Expl
       setPdfFile(null);
       return;
     }
-    if (!documentSrc.toLowerCase().endsWith('.pdf')) {
-      setPdfFile(null);
-      return;
-    }
-    let cancelled = false;
-    getPdfBytes(documentSrc)
-      .then((buf) => {
-        if (!cancelled) setPdfFile(buf);
-      })
-      .catch(() => {
-        if (!cancelled) setPdfFile(documentSrc);
-      });
-    return () => {
-      cancelled = true;
-    };
+    setPdfFile(documentSrc);
   }, [documentSrc, landscape]);
 
   useEffect(() => {

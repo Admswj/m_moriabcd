@@ -3,25 +3,25 @@ import type { CSSProperties } from 'react';
 import {Footer, Plane, DocumentTile, NovepvntiTile, Explorer, isSingleDocument} from './components';
 import { PLANE_SIZE } from './components/Plane';
 import { createInitialDocumentsState, documentsReducer } from './reducers/documentsReducer';
-import { allDocuments, documentTilesProps, matrixTileProps, PLANE_HUB_OVERFLOW_X_PLANE_UNITS, projectTileProps } from './data';
-import { collectPdfSrcsFromDocuments, preloadPdfSrcs } from './pdfPreload';
+import {
+  documentTilesProps,
+  EDIZIONE_NAME,
+  matrixTileProps, OGETTO_NAME,
+  PLANE_X_OVERFLOW,
+  projectTileProps
+} from './data';
 import './App.css';
-import type {SingleDocument} from "./components/DocumentTile";
 
 export const App = () => {
   const [{ documents, indicesPath }, dispatch] = useReducer(documentsReducer, undefined, createInitialDocumentsState);
   const [explorerPdfPage, setExplorerPdfPage] = useState(1);
   const [explorerPdfNumPages, setExplorerPdfNumPages] = useState<number | null>(null);
 
-  const latestIndex = indicesPath.length > 0 ? indicesPath[indicesPath.length - 1]! : undefined;
+  const latestIndex = indicesPath.at(-1);
   const activeExplorerDoc =
-    latestIndex !== undefined && documents[latestIndex] && isSingleDocument(documents[latestIndex]!) ?
-      (documents[latestIndex]! as SingleDocument)
+    latestIndex !== undefined && documents[latestIndex] && isSingleDocument(documents[latestIndex]) ?
+      (documents[latestIndex])
     : null;
-  const explorerIsPdf =
-    Boolean(activeExplorerDoc) &&
-    activeExplorerDoc!.layout !== 'horizontal' &&
-    activeExplorerDoc!.documentSrc.toLowerCase().endsWith('.pdf');
 
   useLayoutEffect(() => {
     setExplorerPdfPage(1);
@@ -33,17 +33,12 @@ export const App = () => {
     setExplorerPdfPage((p) => Math.min(Math.max(1, p), explorerPdfNumPages));
   }, [explorerPdfNumPages]);
 
-  useEffect(() => {
-    preloadPdfSrcs(collectPdfSrcsFromDocuments(allDocuments));
-  }, []);
-
   const onCollectionTileClick = useCallback((clickedIndex: number) => {
     dispatch({ type: 'click', clickedIndex });
   }, []);
 
   const footerPdfNav =
     Boolean(activeExplorerDoc) &&
-    explorerIsPdf &&
     explorerPdfNumPages !== null &&
     explorerPdfNumPages > 1;
 
@@ -54,7 +49,7 @@ export const App = () => {
           className='app-plane-hub'
           style={
             {
-              '--plane-hub-overflow-x': PLANE_HUB_OVERFLOW_X_PLANE_UNITS,
+              '--plane-hub-overflow-x': PLANE_X_OVERFLOW,
               '--plane-size': PLANE_SIZE,
             } as CSSProperties
           }>
@@ -62,7 +57,7 @@ export const App = () => {
             <NovepvntiTile
               {...matrixTileProps}
               onClick={indicesPath.length === 0 ? () => onCollectionTileClick(0) : undefined}
-              opacity={indicesPath.length > 0 ? 0.1 : 1}
+              opacity={indicesPath.length > 0 ? 0.1 : matrixTileProps.opacity}
             />
             {documentTilesProps.map((props, index) => {
               const dimmed = indicesPath.includes(index);
@@ -74,11 +69,9 @@ export const App = () => {
                     <DocumentTile
                       {...props}
                       document={documents[index]!}
-                      coverOpacity={dimmed ? 0.1 : 1}
                       labelPinned={dimmed || index === 0}
                       labelClickable={trailRewindable}
-                      interactionInert={isLatestDimmed}
-                      onClick={index !== 0 ? () => onCollectionTileClick(index) : undefined}
+                      onClick={![0, latestDimmed].includes(index) ? () => onCollectionTileClick(index) : undefined}
                     />
                   </Fragment>
                 : undefined;
@@ -94,7 +87,7 @@ export const App = () => {
             layout={activeExplorerDoc.layout}
             documentSrc={activeExplorerDoc.documentSrc}
             pdfPage={explorerPdfPage}
-            onPdfLoaded={explorerIsPdf ? setExplorerPdfNumPages : undefined}
+            onPdfLoaded={setExplorerPdfNumPages}
           />
         : null}
       </div>
@@ -102,12 +95,12 @@ export const App = () => {
         <Footer
           mode='navigation'
           pdfPage={explorerPdfPage}
-          pdfNumPages={explorerPdfNumPages}
+          pdfPagesNum={explorerPdfNumPages}
           onPrevious={() => setExplorerPdfPage((p) => Math.max(1, p - 1))}
           onNext={() => setExplorerPdfPage((p) => Math.min(explorerPdfNumPages, p + 1))}
-          onDownload={() => {}}
+          downloadVisible={activeExplorerDoc?.name === EDIZIONE_NAME}
         />
-      : <Footer mode='link' prefixed={false} />}
+      : <Footer mode='text' prefixed={indicesPath.map(i => documents[i])?.some(d => d?.name === OGETTO_NAME) ?? false} />}
     </main>
   );
 };
