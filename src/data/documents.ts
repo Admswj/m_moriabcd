@@ -1,26 +1,31 @@
-import type { Document, Layout } from '../components';
+import type { Collection, Document, DocumentTrailer, Layout, SingleDocument } from './Document';
 
 const COVER_PATH_PREFIX = '/covers/';
 const DOCUMENT_PATH_PREFIX = '/documents/';
 
-const getCollectionForName = (name: string, children: Array<Document>): Document => ({
+const getCollectionForName = (name: string, children: Array<Document>): Collection => ({
   name,
   coverSrc: `${COVER_PATH_PREFIX}${name}-cover.jpg`,
   children,
 });
 
-const getSingleDocumentForName = (name: string, layout: Layout = 'vertical'): Document => ({
+const getSingleDocumentForName = (name: string, layout: Layout = 'vertical'): SingleDocument => ({
   name,
   coverSrc: `${COVER_PATH_PREFIX}${name}-cover.jpg`,
   documentSrc: `${DOCUMENT_PATH_PREFIX}${name}-document.pdf`,
   layout,
 });
 
-export const matrixTileDocument: Document = {
+export const matrixTileDocument: SingleDocument = {
   name: 'm_moriabcd',
   documentSrc: 'm_moriabcd-video.mov',
   layout: 'horizontal',
 };
+
+const dirimeDocument: DocumentTrailer = {
+  name: '[d]',
+  coverSrc: `${COVER_PATH_PREFIX}[d]-cover.jpg`
+}
 
 export const allDocuments: Array<Document> = [
   getCollectionForName('imag0', [
@@ -30,7 +35,7 @@ export const allDocuments: Array<Document> = [
     getSingleDocumentForName('b_ibrid0', 'square'),
     getSingleDocumentForName('c_ibrid0', 'square'),
   ]),
-  getCollectionForName('passat0', [getSingleDocumentForName('esposizione')]),
+  getCollectionForName('passat0', [getSingleDocumentForName('esposizi0ne')]),
   getCollectionForName('invit0', [
     getSingleDocumentForName('m0616'),
     getSingleDocumentForName('n0917'),
@@ -39,7 +44,7 @@ export const allDocuments: Array<Document> = [
   ]),
   getCollectionForName('ogett0', [
     getSingleDocumentForName('m_moriabc'),
-    getSingleDocumentForName('edizione'),
-    getSingleDocumentForName('[d]'),
+    getSingleDocumentForName('edizi0ne'),
+    dirimeDocument,
   ]),
 ];

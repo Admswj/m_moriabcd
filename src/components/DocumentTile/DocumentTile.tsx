@@ -1,6 +1,6 @@
 import { useDocumentTilePlacement } from '../../hooks';
 import { planePx, type PlaneCoordinates } from '../Plane';
-import type { Document } from './Document';
+import {type Document, isDocumentTrailer} from '../../data/Document';
 import './DocumentTile.css';
 
 export const LABEL_PLANE_SIZE = 96;
@@ -16,7 +16,7 @@ export type DocumentTileProps = {
   /** When true, name label stays visible without hover (e.g. dimmed trail). */
   labelPinned?: boolean;
   /** Underline on the name label (e.g. dimmed trail entries that can rewind). */
-  labelUnderlined?: boolean;
+  labelClickable?: boolean;
   /** No pointer / “clickable” look (e.g. current drill head); does not remove onClick unless you omit it. */
   interactionInert?: boolean;
   onClick?: () => void;
@@ -28,28 +28,28 @@ export const DocumentTile = ({
   document,
   coverOpacity = 1,
   labelPinned = false,
-  labelUnderlined = false,
+  labelClickable = false,
   interactionInert = false,
   onClick,
 }: DocumentTileProps) => {
   const placementStyle = useDocumentTilePlacement({ centerPlacement, width: width });
-  const labelClickable = Boolean(labelUnderlined && onClick && !interactionInert);
+  const tileClickable = onClick && !interactionInert && !isDocumentTrailer(document);
 
   return (
     <div
       className={[
         'document-tile-root',
-        onClick && !interactionInert ? 'document-tile-clickable' : '',
+        tileClickable ? 'document-tile-clickable' : '',
         interactionInert ? 'document-tile-root--interaction-inert' : '',
         labelPinned ? 'document-tile-root--label-pinned' : '',
       ]
         .filter(Boolean)
         .join(' ')}
-      onClick={onClick}
+      onClick={tileClickable ? onClick : undefined}
       style={placementStyle}>
       <div
         className='document-tile-media'
-        style={{ opacity: coverOpacity }}>
+        style={{ opacity: !isDocumentTrailer(document) ? coverOpacity : 0.6 }}>
         {document.coverSrc && (
           <img
             src={document.coverSrc}
@@ -67,7 +67,7 @@ export const DocumentTile = ({
             fontSize: planePx(LABEL_PLANE_SIZE),
             marginTop: planePx(Math.round(LABEL_PLANE_SIZE / 1.2)),
             marginRight: planePx(Math.round(LABEL_PLANE_SIZE / 3)),
-            ...(labelUnderlined && {
+            ...(labelClickable && {
               textDecorationLine: 'underline',
               textDecorationColor: 'currentColor',
               textDecorationThickness: planePx(LABEL_UNDERLINE_THICKNESS_PLANE),
