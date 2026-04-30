@@ -2,7 +2,7 @@ import { useDocumentTilePlacement } from '../../hooks';
 import { planePx, type PlaneCoordinates } from '../Plane';
 import {type Document, isDocumentTrailer} from '../../data/Document';
 import './DocumentTile.css';
-import type {CSSProperties} from "react";
+import type {CSSProperties, MouseEventHandler} from "react";
 
 export const LABEL_PLANE_SIZE = 96;
 export const LABEL_UNDERLINE_THICKNESS_PLANE = 6;
@@ -53,8 +53,8 @@ export const DocumentTile = ({
       ...(labelPinned && { opacity: 1 })
   };
 
-  const labelOnClick = labelClickable ?
-      (e: MouseEvent<HTMLDivElement>) => {
+  const labelOnClick: MouseEventHandler<HTMLDivElement> | undefined = labelClickable ?
+      (e) => {
           e.stopPropagation();
           onClick?.();
       } : undefined
