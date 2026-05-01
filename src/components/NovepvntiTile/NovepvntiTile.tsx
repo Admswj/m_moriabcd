@@ -18,10 +18,11 @@ export const NovepvntiTile = ({ centerPlacement, color, size, filter, opacity = 
 
   return (
     <div
-      className={['novepvnti-tile', onClick ? 'novepvnti-tile-clickable' : ''].filter(Boolean).join(' ')}
+      className={'novepvnti-tile'}
       onClick={onClick}
       style={{
         ...placementStyle,
+          ...(onClick && { cursor: 'pointer' }),
         opacity,
         filter,
       }}>

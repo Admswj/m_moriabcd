@@ -3,7 +3,7 @@ import type { Collection, Document, DocumentTrailer, Layout, SingleDocument } fr
 const COVER_PATH_PREFIX = '/covers/';
 const DOCUMENT_PATH_PREFIX = '/documents/';
 
-export const OGETTO_NAME = 'ogett0';
+export const OGGETTO_NAME = 'oggett0';
 export const EDIZIONE_NAME = 'edizi0ne';
 export const EDIZIONE_DOWNLOAD_FILE = `${EDIZIONE_NAME}-document.pdf`;
 export const EDIZIONE_DOWNLOAD_PATH = `${DOCUMENT_PATH_PREFIX}${EDIZIONE_DOWNLOAD_FILE}`
@@ -47,7 +47,7 @@ export const allDocuments: Array<Document> = [
     getSingleDocumentForName('l0318'),
     getSingleDocumentForName('f0918'),
   ]),
-  getCollectionForName(OGETTO_NAME, [
+  getCollectionForName(OGGETTO_NAME, [
     getSingleDocumentForName('m_moriabc'),
     getSingleDocumentForName(EDIZIONE_NAME),
     dirimeDocument,
