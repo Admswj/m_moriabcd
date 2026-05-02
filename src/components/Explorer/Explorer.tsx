@@ -58,7 +58,7 @@ export const Explorer = ({ documentSrc, layout, firstPageSrc, bgColor, pdfPage =
   return (
       <div className={`explorer ${explorerVariant} ${isVisible ? 'is-visible' : ''}`} role='region' aria-label='Explorer'>
         <div className='explorer-media'>
-          <div className='explorer-frame' style={{ backgroundColor: enablePageAnim ? bgColor : 'transparent' }} ref={frameRef}>
+          <div className='explorer-frame' style={{ backgroundColor: enablePageAnim && bgColor ? bgColor : 'transparent' }} ref={frameRef}>
             {isLandscape ? (
                 <video className='explorer-video' src={documentSrc} controls playsInline />
             ) : (
