@@ -7,9 +7,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  transition:
-    transform 0.4s ease,
-    opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.66s ease;
 }
 
 .novepvnti-tile > svg {

@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import {useEffect, useLayoutEffect, useRef, useState} from 'react';
 import { Document as PdfDocument, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
@@ -9,16 +9,30 @@ import './Explorer.css';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString();
 
-const PDF_CANVAS_BG = '#e1e5db';
-
-export type ExplorerProps = Pick<SingleDocument, 'documentSrc' | 'layout'> & {
+export type ExplorerProps = Pick<SingleDocument, 'documentSrc' | 'layout' | 'firstPageSrc' | 'bgColor'> & {
   pdfPage?: number;
   onPdfLoaded?: (numPages: number) => void;
 };
 
-export const Explorer = ({ documentSrc, layout, pdfPage = 1, onPdfLoaded }: ExplorerProps) => {
+export const Explorer = ({ documentSrc, layout, firstPageSrc, bgColor, pdfPage = 1, onPdfLoaded }: ExplorerProps) => {
   const frameRef = useRef<HTMLDivElement>(null);
   const isLandscape = layout === 'horizontal';
+
+  const [pdfReady, setPdfReady] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [enablePageAnim, setEnablePageAnim] = useState(false);
+
+  useLayoutEffect(() => {
+    console.log('1', enablePageAnim);
+    setEnablePageAnim(false);
+  }, [documentSrc]);
+
+  useEffect(() => {
+    console.log('2', bgColor);
+    if (pdfReady) {
+      setEnablePageAnim(true);
+    }
+  }, [pdfPage]);
 
   const { frozenPdf, fitScale } = useExplorerPdfFreeze({
     frameRef,
@@ -27,6 +41,14 @@ export const Explorer = ({ documentSrc, layout, pdfPage = 1, onPdfLoaded }: Expl
     enabled: !isLandscape,
   });
 
+  useLayoutEffect(() => {
+    setPdfReady(false);
+    setIsVisible(false);
+
+    const raf = requestAnimationFrame(() => setIsVisible(true));
+    return () => cancelAnimationFrame(raf);
+  }, [documentSrc, layout]);
+
   const explorerVariant = {
     horizontal: 'explorer--landscape',
     square: 'explorer--square',
@@ -34,40 +56,54 @@ export const Explorer = ({ documentSrc, layout, pdfPage = 1, onPdfLoaded }: Expl
   }[layout] || 'explorer--portrait';
 
   return (
-      <div className={`explorer ${explorerVariant}`} role='region' aria-label='Explorer'>
+      <div className={`explorer ${explorerVariant} ${isVisible ? 'is-visible' : ''}`} role='region' aria-label='Explorer'>
         <div className='explorer-media'>
-          <div className='explorer-frame' ref={frameRef}>
+          <div className='explorer-frame' style={{ backgroundColor: enablePageAnim ? bgColor : 'transparent' }} ref={frameRef}>
             {isLandscape ? (
                 <video className='explorer-video' src={documentSrc} controls playsInline />
             ) : (
-                <PdfDocument
-                    file={documentSrc}
-                    className='explorer-pdf-doc'
-                    loading={null}
-                    onLoadSuccess={(pdf) => onPdfLoaded?.(pdf.numPages)}
-                >
-                  {frozenPdf && (
-                      <div className='explorer-pdf-scale-clip'>
-                        <div
-                            className='explorer-pdf-scale-inner'
-                            style={{
-                              width: frozenPdf.pageWidth,
-                              transform: `scale(${fitScale})`,
-                              transformOrigin: 'bottom right',
-                            }}
-                        >
-                          <Page
-                              className='explorer-pdf-page'
-                              pageNumber={pdfPage}
-                              width={frozenPdf.pageWidth}
-                              devicePixelRatio={frozenPdf.devicePixelRatio}
-                              canvasBackground={PDF_CANVAS_BG}
-                              loading={null}
-                          />
-                        </div>
-                      </div>
+                <div className='explorer-pdf-stack'>
+                  {firstPageSrc && (
+                      <img
+                          src={firstPageSrc}
+                          className={`explorer-pdf-layer ${pdfReady ? 'is-hidden' : ''}`}
+                          alt=''
+                          aria-hidden='true'
+                      />
                   )}
-                </PdfDocument>
+                  <PdfDocument
+                      file={documentSrc}
+                      className={`explorer-pdf-doc explorer-pdf-layer ${enablePageAnim ? 'enable-page-transitions' : ''}`}
+
+                      loading={null}
+                      onLoadSuccess={(pdf) => {
+                        setPdfReady(true);
+                        onPdfLoaded?.(pdf.numPages);
+                      }}
+                  >
+                    {frozenPdf && (
+                        <div className='explorer-pdf-scale-clip'>
+                          <div
+                              className='explorer-pdf-scale-inner'
+                              style={{
+                                width: frozenPdf.pageWidth,
+                                transform: `scale(${fitScale})`,
+                                transformOrigin: 'bottom right',
+                              }}
+                          >
+                            <Page
+                                className='explorer-pdf-page'
+                                pageNumber={pdfPage}
+                                width={frozenPdf.pageWidth}
+                                devicePixelRatio={frozenPdf.devicePixelRatio}
+                                canvasBackground={'transparent'}
+                                loading={null}
+                            />
+                          </div>
+                        </div>
+                    )}
+                  </PdfDocument>
+                </div>
             )}
           </div>
         </div>

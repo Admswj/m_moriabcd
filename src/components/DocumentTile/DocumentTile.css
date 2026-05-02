@@ -11,7 +11,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.66s ease;
 }
 
 .document-tile-media > img {

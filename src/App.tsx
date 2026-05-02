@@ -72,6 +72,8 @@ export const App = () => {
               <Explorer
                   layout={explorer.activeDoc.layout}
                   documentSrc={explorer.activeDoc.documentSrc}
+                  firstPageSrc={explorer.activeDoc.firstPageSrc}
+                  bgColor={explorer.activeDoc.bgColor}
                   pdfPage={explorer.pdfPage}
                   onPdfLoaded={explorer.setPdfNumPages}
               />

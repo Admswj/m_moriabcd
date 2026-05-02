@@ -10,6 +10,12 @@
   overflow: visible;
   display: flex;
   flex-direction: column;
+  opacity: 0;
+  animation: pageTurn 1.2s ease-in-out forwards;
+}
+
+.explorer.is-visible {
+  opacity: 1;
 }
 
 .explorer-media {
@@ -21,6 +27,14 @@
   margin-bottom: 8vh;
   margin-right: 3vh;
   overflow: visible;
+}
+
+.explorer-frame {
+  position: relative;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  overflow: hidden;
+  background-color: transparent;
 }
 
 .explorer--landscape .explorer-frame {
@@ -38,62 +52,86 @@
 }
 
 .explorer--square .explorer-frame {
-  width: min(92cqw, calc(80cqh * 9 / 16));
+  width: min(92cqw, calc(80cqh * 1 / 1));
   aspect-ratio: 1 / 1;
   height: auto;
   max-height: 80cqh;
 }
 
-.explorer-frame {
-  position: relative;
-  box-sizing: border-box;
-  flex-shrink: 0;
-  overflow: hidden;
-}
-
-.explorer-video {
+.explorer-video,
+.explorer-pdf-stack {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  box-sizing: border-box;
+}
+
+.explorer-video {
   object-fit: contain;
   background: #000;
 }
 
-.explorer-pdf-doc {
-  position: absolute;
-  inset: 0;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  overflow: hidden;
-  min-height: 0;
-  min-width: 0;
+.explorer-pdf-stack {
+  display: grid;
+  place-items: center;
 }
 
-.explorer--portrait .explorer-pdf-doc,
-.explorer--square .explorer-pdf-doc {
+.explorer--landscape .explorer-pdf-stack {
+  align-items: flex-start;
+}
+
+.explorer-pdf-layer {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.explorer-pdf-layer.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.explorer-pdf-doc {
+  display: flex;
+  justify-content: center;
   align-items: center;
+  width: 100%;
+  height: 100%;
 }
 
 .explorer-pdf-scale-clip {
-  box-sizing: border-box;
   position: absolute;
   inset: 0;
   overflow: hidden;
-  min-width: 0;
-  min-height: 0;
 }
 
 .explorer-pdf-scale-inner {
   position: absolute;
   right: 0;
   bottom: 0;
-  box-sizing: border-box;
+  transform-origin: bottom right;
 }
 
 .explorer-pdf-page {
   max-width: none;
+  display: block;
+}
+
+.enable-page-transitions .explorer-pdf-page canvas,
+.enable-page-transitions .explorer-pdf-page .react-pdf__Page__textContent,
+.enable-page-transitions .explorer-pdf-page .react-pdf__Page__annotations {
+  animation: pageTurn 1.2s ease-in-out forwards;
+}
+
+@keyframes pageTurn {
+  0% {
+    opacity: 0;
+    transform: translateY(4px) scale(0.995);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

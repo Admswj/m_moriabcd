@@ -12,6 +12,8 @@ export type Collection = DocumentTrailer & {
 export type SingleDocument = DocumentTrailer & {
   documentSrc: string;
   layout: Layout;
+  firstPageSrc?: string;
+  bgColor?: string;
 };
 
 export type Document = Collection | SingleDocument | DocumentTrailer;
